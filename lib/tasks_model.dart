@@ -10,10 +10,6 @@ class Task {
   void setDoneState(isDone) {
     this.isDone = isDone;
   }
-
-  void toggleDone() {
-    isDone = !isDone;
-  }
 }
 
 class TasksList extends ChangeNotifier {
@@ -29,11 +25,6 @@ class TasksList extends ChangeNotifier {
   void addTask(String title, bool isDone) {
     if (title.isEmpty) return;
     _tasks.add(Task(title: title, isDone: isDone));
-    notifyListeners();
-  }
-
-  void updateTask(Task task) {
-    task.toggleDone();
     notifyListeners();
   }
 

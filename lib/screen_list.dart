@@ -5,13 +5,29 @@ import 'tasks_model.dart';
 import 'tasks_widget.dart';
 
 // This is the main screen that displays the list of to-do items.
-class ScreenList extends StatelessWidget {
+class ScreenList extends StatefulWidget {
   ScreenList({super.key});
+
+  @override
+  State<ScreenList> createState() => _ScreenListState();
+}
+
+class _ScreenListState extends State<ScreenList> {
+  String taskFilter = 'All'; // this is the only state variable
 
   // Function to generate a list of CustomListTile widgets from the tasks.
   List<CustomListTile> getListTiles(context) {
     var tasksModel = Provider.of<TasksList>(context);
-    List<Task> taskList = tasksModel.tasks;
+
+    List<Task> taskList = [];
+
+    if (taskFilter == 'All') {
+      taskList = tasksModel.tasks;
+    } else if (taskFilter == 'Done') {
+      taskList = tasksModel.doneTasks;
+    } else if (taskFilter == 'Undone') {
+      taskList = tasksModel.undoneTasks;
+    }
 
     List<CustomListTile> tiles = taskList
         .map(
@@ -24,10 +40,34 @@ class ScreenList extends StatelessWidget {
                 listen: false,
               ).setDone(task, value!);
             },
+            deleteCallback: () {
+              Provider.of<TasksList>(context, listen: false).removeTask(task);
+            },
           ),
         )
         .toList();
     return tiles;
+  }
+
+  // The appbar popup menu for filtering the to-do list.
+  List<Widget> popupMenu() {
+    return <Widget>[
+      PopupMenuButton<String>(
+        icon: Icon(Icons.more_vert),
+        onSelected: handleClick,
+        itemBuilder: (BuildContext context) {
+          return ['All', 'Done', 'Undone'].map((String choice) {
+            return PopupMenuItem<String>(value: choice, child: Text(choice));
+          }).toList();
+        },
+      ),
+    ];
+  }
+
+  void handleClick(String value) {
+    setState(() {
+      taskFilter = value;
+    });
   }
 
   // Build function to create the UI of the screen.
@@ -58,31 +98,5 @@ class ScreenList extends StatelessWidget {
         child: Icon(Icons.add),
       ),
     );
-  }
-}
-
-// The appbar popup menu for filtering the to-do list.
-List<Widget> popupMenu() {
-  return <Widget>[
-    PopupMenuButton<String>(
-      icon: Icon(Icons.more_vert),
-      onSelected: handleClick,
-      itemBuilder: (BuildContext context) {
-        return ['All', 'Done', 'Undone'].map((String choice) {
-          return PopupMenuItem<String>(value: choice, child: Text(choice));
-        }).toList();
-      },
-    ),
-  ];
-}
-
-void handleClick(String value) {
-  switch (value) {
-    case 'All':
-      break; // 2do: implement filter logic
-    case 'Done':
-      break;
-    case 'Undone':
-      break;
   }
 }
