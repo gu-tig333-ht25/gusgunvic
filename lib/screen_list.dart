@@ -1,28 +1,36 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'screen_add.dart';
+import 'tasks_model.dart';
+import 'tasks_widget.dart';
 
-// This file contains the first screen of the app, which displays a list of to-do items.
-
-// This is a custom ListTile widget that includes a checkbox and a delete icon.
-class CustomListTile extends CheckboxListTile {
-  CustomListTile({super.key, required String title})
-    : super(
-        title: Text(title, style: const TextStyle(fontSize: 20)),
-        value: false,
-        onChanged: (value) {},
-        controlAffinity: ListTileControlAffinity.leading,
-        secondary: GestureDetector(
-          child: Icon(Icons.close),
-          onTap: () {
-            // Handle delete action
-          },
-        ),
-      );
-}
-
+// This is the main screen that displays the list of to-do items.
 class ScreenList extends StatelessWidget {
-  const ScreenList({super.key});
+  ScreenList({super.key});
 
+  // Function to generate a list of CustomListTile widgets from the tasks.
+  List<CustomListTile> getListTiles(context) {
+    var tasksModel = Provider.of<TasksList>(context);
+    List<Task> taskList = tasksModel.tasks;
+
+    List<CustomListTile> tiles = taskList
+        .map(
+          (task) => CustomListTile(
+            title: task.title,
+            isChecked: task.isDone,
+            checkboxCallback: (value) {
+              Provider.of<TasksList>(
+                context,
+                listen: false,
+              ).setDone(task, value!);
+            },
+          ),
+        )
+        .toList();
+    return tiles;
+  }
+
+  // Build function to create the UI of the screen.
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -35,11 +43,7 @@ class ScreenList extends StatelessWidget {
         children: ListTile.divideTiles(
           color: Color.fromARGB(255, 72, 71, 71),
           context: context,
-          tiles: [
-            CustomListTile(title: 'Item 1'),
-            CustomListTile(title: 'Item 2'),
-            CustomListTile(title: 'Item 3'),
-          ],
+          tiles: getListTiles(context),
         ).toList(),
       ),
       floatingActionButton: FloatingActionButton(
