@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'tasks_model.dart';
 
 // This file contains the second screen of the app, which allows users to add new to-do items.
 
@@ -7,6 +10,8 @@ class ScreenAdd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String newTaskTitle = '';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('TIG333 TODO'),
@@ -23,11 +28,19 @@ class ScreenAdd extends StatelessWidget {
                   labelText: 'What are you going to do?',
                   hintText: 'Enter your task here',
                 ),
+                onChanged: (text) {
+                  newTaskTitle = text;
+                },
               ),
             ),
             ElevatedButton(
               onPressed: () {
                 // Handle add item action
+                Provider.of<TasksList>(
+                  context,
+                  listen: false,
+                ).addTask(newTaskTitle, false);
+                Navigator.pop(context);
               },
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
