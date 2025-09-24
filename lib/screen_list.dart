@@ -13,6 +13,13 @@ class ScreenList extends StatefulWidget {
 }
 
 class _ScreenListState extends State<ScreenList> {
+  @override
+  void initState() {
+    super.initState();
+    // Fetch tasks when the screen is initialized
+    Provider.of<TasksList>(context, listen: false).fetchTasks();
+  }
+
   String taskFilter = 'All'; // this is the only state variable
 
   // Function to generate a list of CustomListTile widgets from the tasks.
