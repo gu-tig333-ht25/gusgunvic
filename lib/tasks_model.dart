@@ -1,7 +1,7 @@
 import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'dart:convert';
-import 'backend_api.dart';
+import 'backend_api.dart' as backend;
 
 class Task {
   String title;
@@ -35,7 +35,8 @@ class TasksList extends ChangeNotifier {
   // Fetch all tasks from the backend server
   Future<void> fetchTasks() async {
     print('Fetching tasks from server...');
-    getTasksJSON()
+    backend
+        .getTasksJSON()
         .then((jsonString) {
           updateTasksWithJSON(jsonString);
         })
@@ -48,7 +49,8 @@ class TasksList extends ChangeNotifier {
   Future<void> addTask(String title, bool isDone) async {
     if (title.isEmpty) return;
 
-    postTask(title, isDone)
+    backend
+        .postTask(title, isDone)
         .then((jsonString) {
           updateTasksWithJSON(jsonString);
         })
@@ -59,7 +61,7 @@ class TasksList extends ChangeNotifier {
 
   // Update a task on the backend server
   Future<void> setDone(Task task, bool isDone) async {
-    Future<int> statusCode = updateTask(task.title, task.id, task.isDone);
+    int statusCode = await backend.updateTask(task.title, task.id, isDone);
 
     if (statusCode == 200) {
       task.setDoneState(isDone);
@@ -69,7 +71,7 @@ class TasksList extends ChangeNotifier {
 
   // Delete a task on the backend server
   Future<void> removeTask(Task task) async {
-    Future<int> statusCode = deleteTask(task.id);
+    int statusCode = await backend.deleteTask(task.id);
 
     if (statusCode == 200) {
       // Remove the task from the local list using the ID
