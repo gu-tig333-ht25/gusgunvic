@@ -4,6 +4,18 @@ import 'screen_add.dart';
 import 'tasks_model.dart';
 import 'tasks_widget.dart';
 
+// Enum for filtering tasks in the to-do list.
+// Using enhanced enum to ovverride the name property.
+enum TaskFilter {
+  all('All'),
+  done('Done'),
+  unfinished('Unfinished');
+
+  final String name;
+
+  const TaskFilter(this.name);
+}
+
 // This is the main screen that displays the list of to-do items.
 class ScreenList extends StatefulWidget {
   ScreenList({super.key});
@@ -20,7 +32,7 @@ class _ScreenListState extends State<ScreenList> {
     Provider.of<TasksList>(context, listen: false).fetchTasks();
   }
 
-  String taskFilter = 'All'; // this is the only state variable
+  TaskFilter taskFilter = TaskFilter.all; // this is the only state variable
 
   // Function to generate a list of CustomListTile widgets from the tasks.
   List<CustomListTile> getListTiles(context) {
@@ -28,11 +40,11 @@ class _ScreenListState extends State<ScreenList> {
 
     List<Task> taskList = [];
 
-    if (taskFilter == 'All') {
+    if (taskFilter == TaskFilter.all) {
       taskList = tasksModel.tasks;
-    } else if (taskFilter == 'Done') {
+    } else if (taskFilter == TaskFilter.done) {
       taskList = tasksModel.doneTasks;
-    } else if (taskFilter == 'Undone') {
+    } else if (taskFilter == TaskFilter.unfinished) {
       taskList = tasksModel.undoneTasks;
     }
 
@@ -59,19 +71,22 @@ class _ScreenListState extends State<ScreenList> {
   // The appbar popup menu for filtering the to-do list.
   List<Widget> popupMenu() {
     return <Widget>[
-      PopupMenuButton<String>(
+      PopupMenuButton<TaskFilter>(
         icon: Icon(Icons.more_vert),
         onSelected: handleClick,
         itemBuilder: (BuildContext context) {
-          return ['All', 'Done', 'Undone'].map((String choice) {
-            return PopupMenuItem<String>(value: choice, child: Text(choice));
+          return TaskFilter.values.map((TaskFilter choice) {
+            return PopupMenuItem<TaskFilter>(
+              value: choice,
+              child: Text(choice.name),
+            );
           }).toList();
         },
       ),
     ];
   }
 
-  void handleClick(String value) {
+  void handleClick(TaskFilter value) {
     setState(() {
       taskFilter = value;
     });
