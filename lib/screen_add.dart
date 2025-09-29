@@ -10,7 +10,7 @@ class ScreenAdd extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String newTaskTitle = '';
+    TextEditingController controller = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(
@@ -23,19 +23,18 @@ class ScreenAdd extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(25.0),
               child: TextField(
+                controller: controller,
                 decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'What are you going to do?',
                   hintText: 'Enter your task here',
                 ),
-                onChanged: (text) {
-                  newTaskTitle = text;
-                },
               ),
             ),
             ElevatedButton(
               onPressed: () {
                 // Handle add item action
+                String newTaskTitle = controller.text.trim();
                 Provider.of<TasksList>(
                   context,
                   listen: false,
